@@ -42,7 +42,7 @@ init _ =
         monday =
             { hbm | label = "Monday" }
     in
-    ( { days = ( monday, [ monday ] )
+    ( { days = ( monday, [ monday, { hbm | label = "Tuesday" } ] )
       , exceptions = []
       }
     , Cmd.none

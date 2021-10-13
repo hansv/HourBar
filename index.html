@@ -10570,7 +10570,12 @@ var $author$project$Main$init = function (_v0) {
 			days: _Utils_Tuple2(
 				monday,
 				_List_fromArray(
-					[monday])),
+					[
+						monday,
+						_Utils_update(
+						hbm,
+						{label: 'Tuesday'})
+					])),
 			exceptions: _List_Nil
 		},
 		$elm$core$Platform$Cmd$none);
