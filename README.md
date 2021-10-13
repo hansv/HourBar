@@ -1,0 +1,1 @@
+This Elm app implements a view of days with hours that can be toggled between open and closed.
