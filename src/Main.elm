@@ -36,13 +36,13 @@ type alias Model =
 init : () -> ( Model, Cmd Msg )
 init _ =
     let
-        hbm =
-            HB.initModel
-
         monday =
-            { hbm | label = "Monday" }
+            HB.initModel "Monday" []
+        tuesday =
+            HB.initModel "Tuesday" []
+
     in
-    ( { days = ( monday, [ monday, { hbm | label = "Tuesday" } ] )
+    ( { days = ( monday, [ monday, tuesday ] )
       , exceptions = []
       }
     , Cmd.none

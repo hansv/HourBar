@@ -34,11 +34,19 @@ allClosed =
         |> List.map (\_ -> Closed)
 
 
-initModel : Model
-initModel =
-    { label = ""
+initModel : String -> List OpenClosed -> Model
+initModel label hours =
+    let
+      h =
+        if List.isEmpty hours then
+          allClosed
+        else
+          hours
+
+    in
+    { label = label
     , dragging = No
-    , hours = allClosed
+    , hours = h
     , state = Open
     }
 
