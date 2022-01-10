@@ -1,0 +1,8 @@
+{
+  "dependencies": {
+    "elm-live": "^4.0.2"
+  },
+  "scripts": {
+    "serve": "npx elm-live src/Main.elm --start-page=index.html -- --output=hourbar.js --debug"
+  }
+}

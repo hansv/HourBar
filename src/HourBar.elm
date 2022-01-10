@@ -15,6 +15,7 @@ type alias Model =
     , dragging : Dragger
     , hours : List OpenClosed
     , state : OpenClosed
+    , interactive : Bool
     }
 
 
@@ -34,20 +35,21 @@ allClosed =
         |> List.map (\_ -> Closed)
 
 
-initModel : String -> List OpenClosed -> Model
-initModel label hours =
+initModel : String -> List OpenClosed -> Bool -> Model
+initModel label hours interactive =
     let
-      h =
-        if List.isEmpty hours then
-          allClosed
-        else
-          hours
+        h =
+            if List.isEmpty hours then
+                allClosed
 
+            else
+                hours
     in
     { label = label
     , dragging = No
     , hours = h
     , state = Open
+    , interactive = interactive
     }
 
 
@@ -105,27 +107,36 @@ update msg model =
 
 view : Model -> Html Msg
 view model =
+    let
+        clst =
+            model.hours
+                |> List.indexedMap (\i oc -> ( List.getAt (i - 1) model.hours, oc, List.getAt (i + 1) model.hours ))
+    in
     div [ style "display" "flex" ]
         [ div [] [ text model.label ]
         , div
             [ style "display" "grid"
             , style "grid-template-columns" "repeat(24, minmax(0, 1fr))"
             , style "width" "100%"
+            , class "text-white"
             ]
-            (List.indexedMap (viewBlock model.state) model.hours)
+            (List.indexedMap (viewBlock model.interactive model.state) clst)
         ]
 
 
-viewBlock : OpenClosed -> Int -> OpenClosed -> Html Msg
-viewBlock state idx oc =
+viewBlock : Bool -> OpenClosed -> Int -> ( Maybe OpenClosed, OpenClosed, Maybe OpenClosed ) -> Html Msg
+viewBlock interactive state idx ocThrupple =
     let
+        ( _, oc, _ ) =
+            ocThrupple
+
         color =
             case oc of
                 Open ->
-                    "green"
+                    "bg-green-800"
 
                 Closed ->
-                    "grey"
+                    "text-transparent hover:text-black"
 
         co =
             case oc of
@@ -134,16 +145,68 @@ viewBlock state idx oc =
 
                 Closed ->
                     Open
+
+        klss =
+            let
+                s =
+                    "rounded-l-full"
+
+                e =
+                    "rounded-r-full"
+
+                se =
+                    "rounded-full"
+
+                i =
+                    "text-transparent hover:text-black"
+            in
+            case ocThrupple of
+                ( Nothing, Open, Just Closed ) ->
+                    se
+
+                ( Just Closed, Open, Nothing ) ->
+                    se
+
+                ( Just Closed, Open, Just Closed ) ->
+                    se
+
+                --
+                ( Just Open, Open, Just Closed ) ->
+                    e
+
+                ( Just Open, Open, Nothing ) ->
+                    e
+
+                --
+                ( Just Closed, Open, Just Open ) ->
+                    s
+
+                --
+                ( Just Open, Open, Just Open ) ->
+                    i
+
+                --
+                _ ->
+                    ""
+
+        events =
+            if interactive then
+                [ onMouseDown (Start idx co)
+                , onMouseEnter (Step idx state)
+                , onMouseUp Stop
+                ]
+
+            else
+                []
     in
     div
-        ([ style "background" color
+        ([ class color
          , style "text-align" "center"
          , style "padding" "0.5rem"
-         , onMouseDown (Start idx co)
-         , onMouseEnter (Step idx state)
-         , onMouseUp Stop
+         , class klss
          ]
             ++ userSelectNone
+            ++ events
         )
         [ text (String.fromInt idx) ]
 
@@ -160,4 +223,3 @@ userSelectNone =
 
         -- , "pointer-events"
         ]
-

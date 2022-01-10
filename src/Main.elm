@@ -37,9 +37,9 @@ init : () -> ( Model, Cmd Msg )
 init _ =
     let
         monday =
-            HB.initModel "Monday" []
+            HB.initModel "Monday" [] True
         tuesday =
-            HB.initModel "Tuesday" []
+            HB.initModel "Tuesday" [] True
 
     in
     ( { days = ( monday, [ monday, tuesday ] )
